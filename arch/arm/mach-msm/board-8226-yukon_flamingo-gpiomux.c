@@ -76,6 +76,7 @@ static struct msm_gpiomux_config msm_eth_configs[] = {
 };
 #endif
 
+/* #//[All][Main][TP][32772]20140106,Eric, Porting elan-ektf3135 touch driver. */
 #if defined(CONFIG_TOUCHSCREEN_ELAN_EKTF3135)
 static struct gpiomux_setting elan_ektf3135_int_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -88,6 +89,11 @@ static struct gpiomux_setting elan_ektf3135_int_sus_cfg = {
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_DOWN,
 };
+static struct gpiomux_setting elan_ektf3135_res_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
 
 static struct gpiomux_setting elan_ektf3135_res_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -95,12 +101,32 @@ static struct gpiomux_setting elan_ektf3135_res_act_cfg = {
 	.pull = GPIOMUX_PULL_DOWN,
 };
 
-static struct gpiomux_setting elan_ektf3135_res_sus_cfg = {
+#else
+static struct gpiomux_setting synaptics_int_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_8MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting synaptics_int_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
+
+static struct gpiomux_setting synaptics_reset_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_6MA,
 	.pull = GPIOMUX_PULL_DOWN,
 };
+
+static struct gpiomux_setting synaptics_reset_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
 #endif
+/* #//[All][Main][TP][32772]end */
 
 static struct gpiomux_setting gpio_keys_active = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -130,6 +156,16 @@ static struct gpiomux_setting gpio_spi_susp_config = {
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_DOWN,
 };
+
+/* --- [All][Main][NFC][DMS][LuboLu] Porting NFC(NXP PN547). 20140103 begin --- */
+#ifndef CONFIG_PN544
+static struct gpiomux_setting gpio_spi_cs_eth_config = {
+	.func = GPIOMUX_FUNC_4,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
+#endif /* CONFIG_PN544 */
+/* --- [All][Main][NFC][DMS][LuboLu] 20140103 end   --- */
 
 static struct gpiomux_setting wcnss_5wire_suspend_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -161,6 +197,8 @@ static struct gpiomux_setting gpio_i2c_config = {
 	.pull = GPIOMUX_PULL_NONE,
 };
 
+/* --- [All][Main][NFC][DMS][LuboLu] Porting NFC(NXP PN547). 20140103 begin --- */
+#ifdef CONFIG_PN544
 static struct gpiomux_setting pn544_int_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_2MA,
@@ -199,6 +237,8 @@ static struct msm_gpiomux_config pn544_configs[] __initdata = {
 		},
 	},
 };
+#endif /* CONFIG_PN544 */
+/* --- [All][Main][NFC][DMS][LuboLu] 20140103 end   --- */
 
 static struct msm_gpiomux_config msm_keypad_configs[] __initdata = {
 	{
@@ -222,7 +262,7 @@ static struct msm_gpiomux_config msm_keypad_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &gpio_keys_suspend,
 		},
 	},
-/* [Flamingo] Using volume_down key enters fastboot mode */
+/* [Arima5908][32701][JessicaTseng] [All][Main][Key][DMS]Using volume_down key enters fastboot mode 20140103 start */
 	{
 		.gpio = 110,
 		.settings = {
@@ -230,9 +270,10 @@ static struct msm_gpiomux_config msm_keypad_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &gpio_keys_suspend,
 		},
 	},
+/* [Arima5908][32701][JessicaTseng] [All][Main][Key][DMS]Using volume_down key enters fastboot mode 20140103 end */
 };
 
-/* [Flamingo] Read LCM ID for ATS */
+/*[Arima5908][33534][StevenChen] Read LCM ID for ATS 2014/01/30 begin */
 static struct gpiomux_setting lcd_id_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_8MA,
@@ -247,6 +288,7 @@ static struct gpiomux_setting lcd_id_sus_cfg = {
 	.dir = GPIOMUX_IN,
 };
 
+/*[Arima5908][33534][StevenChen] Read LCM ID for ATS 2014/01/30 end */
 static struct gpiomux_setting lcd_rst_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_8MA,
@@ -261,7 +303,7 @@ static struct gpiomux_setting lcd_rst_sus_cfg = {
 };
 
 static struct msm_gpiomux_config msm_lcd_configs[] __initdata = {
-/* [Flamingo] Read LCM ID for ATS */
+/*[Arima5908][33534][StevenChen] Read LCM ID for ATS 2014/01/30 begin */
 	{
 		.gpio = 27,		/* LCD ID */
 		.settings = {
@@ -269,6 +311,8 @@ static struct msm_gpiomux_config msm_lcd_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &lcd_id_sus_cfg,
 		},
 	},
+
+/*[Arima5908][33534][StevenChen] Read LCM ID for ATS 2014/01/30 end */
 	{
 		.gpio = 25,		/* LCD Reset */
 		.settings = {
@@ -276,13 +320,20 @@ static struct msm_gpiomux_config msm_lcd_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &lcd_rst_sus_cfg,
 		},
 	},
+/* Unsure
+/*[Arima5908][33614][bozhi_lin] NMI326 dtv function porting 20140207 begin
+#if (CONFIG_BSP_HW_V_CURRENT >= CONFIG_BSP_HW_V_8926SS_DP) && defined(CONFIG_BSP_HW_SKU_8926SS)
+
+#else
 	{
-		.gpio = 109,		/* LCD Enable */
+		.gpio = 109,		/* LCD Enable 
 		.settings = {
 			[GPIOMUX_ACTIVE]    = &lcd_rst_act_cfg,
 			[GPIOMUX_SUSPENDED] = &lcd_rst_sus_cfg,
 		},
 	}
+#endif
+/*[Arima5908][33614][bozhi_lin] 20140207 end  */
 };
 
 static struct msm_gpiomux_config msm_blsp_configs[] __initdata = {
@@ -328,6 +379,16 @@ static struct msm_gpiomux_config msm_blsp_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &gpio_i2c_config,
 		},
 	},
+/* --- [All][Main][NFC][DMS][LuboLu] Porting NFC(NXP PN547). 20140103 begin --- */
+#ifndef CONFIG_PN544
+	{
+		.gpio      = 22,		/* BLSP1 QUP1 SPI_CS_ETH */
+		.settings = {
+			[GPIOMUX_SUSPENDED] = &gpio_spi_cs_eth_config,
+		},
+	},
+#endif /* CONFIG_PN544 */
+/* --- [All][Main][NFC][DMS][LuboLu] 20140103 end   --- */
 	{					/*  NFC   */
 		.gpio      = 10,		/* BLSP1 QUP3 I2C_DAT */
 		.settings = {
@@ -344,24 +405,113 @@ static struct msm_gpiomux_config msm_blsp_configs[] __initdata = {
 	},
 };
 
+/* #//[All][Main][TP][32772]20140106,Eric, Porting elan-ektf3135 touch driver. */
 #if defined(CONFIG_TOUCHSCREEN_ELAN_EKTF3135)
 static struct msm_gpiomux_config elan_ektf3135_io_configs[] __initdata = {
 	{
 		.gpio = 16,
 		.settings = {
-			[GPIOMUX_ACTIVE] = &elan_ektf3135_res_act_cfg,
+			[GPIOMUX_ACTIVE]    = &elan_ektf3135_res_act_cfg,
 			[GPIOMUX_SUSPENDED] = &elan_ektf3135_res_sus_cfg,
 		},
 	},
 	{
 		.gpio = 17,
 		.settings = {
-			[GPIOMUX_ACTIVE] = &elan_ektf3135_int_act_cfg,
+			[GPIOMUX_ACTIVE]    = &elan_ektf3135_int_act_cfg,
 			[GPIOMUX_SUSPENDED] = &elan_ektf3135_int_sus_cfg,
 		},
 	},
 };
+
+#else
+static struct msm_gpiomux_config msm_synaptics_configs[] __initdata = {
+	{
+		.gpio = 16,
+		.settings = {
+			[GPIOMUX_ACTIVE] = &synaptics_reset_act_cfg,
+			[GPIOMUX_SUSPENDED] = &synaptics_reset_sus_cfg,
+		},
+	},
+	{
+		.gpio = 17,
+		.settings = {
+			[GPIOMUX_ACTIVE] = &synaptics_int_act_cfg,
+			[GPIOMUX_SUSPENDED] = &synaptics_int_sus_cfg,
+		},
+	},
+};
 #endif
+/* #//[All][Main][TP][32772]end */
+
+static struct gpiomux_setting gpio_nc_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_NONE,
+};
+
+static struct gpiomux_setting goodix_int_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting goodix_int_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
+
+static struct gpiomux_setting goodix_reset_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting goodix_reset_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
+
+static struct gpiomux_setting nfc_ldo_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting nfc_ldo_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting nfc_regc_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting nfc_regc_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_NONE,
+	.dir = GPIOMUX_OUT_LOW,
+};
+
+static struct gpiomux_setting nfc_wake_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting nfc_wake_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_NONE,
+	.dir = GPIOMUX_OUT_LOW,
+};
+
 
 static struct gpiomux_setting sd_card_det_active_config = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -561,18 +711,23 @@ static struct msm_gpiomux_config msm_sensor_configs[] __initdata = {
 
 };
 
-/* [Flamingo] Fix GPIO default configuration of sensors */
+/*[Arima5908][32878][StevenChen] Fix GPIO default configuration of sensors 2014/01/08 begin */	
 static struct gpiomux_setting auxpcm_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_8MA,
+/*[Arima5908][32887][StevenChen] Fix GPIO default configuration of sensors 2014/01/09 begin */
 	.pull = GPIOMUX_PULL_UP,
+/*[Arima5908][32887][StevenChen] Fix GPIO default configuration of sensors 2014/01/09 end */
 };
 
 static struct gpiomux_setting auxpcm_sus_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_2MA,
+/*[Arima5908][32887][StevenChen] Fix GPIO default configuration of sensors 2014/01/09 begin */
 	.pull = GPIOMUX_PULL_UP,
+/*[Arima5908][32887][StevenChen] Fix GPIO default configuration of sensors 2014/01/09 end */
 };
+/*[Arima5908][32878][StevenChen] Fix GPIO default configuration of sensors 2014/01/08 end */
 
 static struct msm_gpiomux_config msm_auxpcm_configs[] __initdata = {
 	{
@@ -596,6 +751,9 @@ static struct msm_gpiomux_config msm_auxpcm_configs[] __initdata = {
 			[GPIOMUX_ACTIVE] = &auxpcm_act_cfg,
 		},
 	},
+/* Unsure about this one
+
+/*[Arima5908][33614][bozhi_lin] NMI326 dtv function porting 20140207 begin
 	{
 		.gpio = 66,
 		.settings = {
@@ -603,6 +761,9 @@ static struct msm_gpiomux_config msm_auxpcm_configs[] __initdata = {
 			[GPIOMUX_ACTIVE] = &auxpcm_act_cfg,
 		},
 	},
+*/
+
+/*[Arima5908][33614][bozhi_lin] 20140207 end  */
 };
 
 static struct gpiomux_setting usb_otg_sw_cfg = {
@@ -705,6 +866,60 @@ static void msm_gpiomux_sdc3_install(void)
 static void msm_gpiomux_sdc3_install(void) {}
 #endif /* CONFIG_MMC_MSM_SDC3_SUPPORT */
 
+/*[Arima5908][33614][bozhi_lin] NMI326 dtv function porting 20140207 begin*/
+#if defined(CONFIG_ISDBT_NMI)
+static struct gpiomux_setting dtv_reset_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_DOWN,
+	.dir = GPIOMUX_OUT_LOW, 
+};
+
+static struct gpiomux_setting dtv_en_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_6MA,
+	.pull = GPIOMUX_PULL_DOWN,
+	.dir = GPIOMUX_OUT_LOW,
+};
+
+static struct gpiomux_setting dtv_int_act_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_8MA,
+	.pull = GPIOMUX_PULL_UP,
+};
+
+static struct gpiomux_setting dtv_int_sus_cfg = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_DOWN,
+};
+
+static struct msm_gpiomux_config msm_dtv_configs[] __initdata = {
+	{
+		.gpio = 66, /*DTV EN DP*/
+		.settings = {
+			[GPIOMUX_ACTIVE]    = &dtv_en_act_cfg,
+			[GPIOMUX_SUSPENDED] = &dtv_en_act_cfg,
+		},
+	},
+	{
+		.gpio = 23, /*DTV RESET DP*/
+		.settings = {
+			[GPIOMUX_ACTIVE]    = &dtv_reset_act_cfg,
+			[GPIOMUX_SUSPENDED] = &dtv_reset_act_cfg,
+		},
+	},
+	{
+		.gpio = 109, /*DTV IRQ DP*/
+		.settings = {
+			[GPIOMUX_ACTIVE]    = &dtv_int_act_cfg,
+			[GPIOMUX_SUSPENDED] = &dtv_int_sus_cfg,
+		},
+	},
+};
+#endif
+/*[Arima5908][33614][bozhi_lin] 20140207 end  */
+
 void __init msm8226_init_gpiomux(void)
 {
 	int rc;
@@ -721,25 +936,30 @@ void __init msm8226_init_gpiomux(void)
 	msm_gpiomux_install(msm_keypad_configs,
 			ARRAY_SIZE(msm_keypad_configs));
 
-	msm_gpiomux_install(msm_blsp_configs,
+		msm_gpiomux_install(msm_blsp_configs,
 			ARRAY_SIZE(msm_blsp_configs));
 
 	msm_gpiomux_install(wcnss_5wire_interface,
 				ARRAY_SIZE(wcnss_5wire_interface));
 
 	msm_gpiomux_install(&sd_card_det, 1);
-#if defined(CONFIG_TOUCHSCREEN_ELAN_EKTF3135)
 	msm_gpiomux_install(elan_ektf3135_io_configs,
-				ARRAY_SIZE(elan_ektf3135_io_configs));
-#endif
+					ARRAY_SIZE(elan_ektf3135_io_configs));
 
+
+/* --- [All][Main][NFC][DMS][LuboLu] Porting NFC(NXP PN547). 20140103 begin --- */
+#ifdef CONFIG_PN544
 	msm_gpiomux_install(pn544_configs,
 			ARRAY_SIZE(pn544_configs));
+#endif /* CONFIG_PN544 */
+/* --- [All][Main][NFC][DMS][LuboLu] 20140103 end   --- */
+
 
 	msm_gpiomux_install_nowrite(msm_lcd_configs,
 			ARRAY_SIZE(msm_lcd_configs));
 
 	msm_gpiomux_install(msm_sensor_configs, ARRAY_SIZE(msm_sensor_configs));
+
 
 	msm_gpiomux_install(msm_auxpcm_configs,
 			ARRAY_SIZE(msm_auxpcm_configs));
@@ -749,6 +969,12 @@ void __init msm8226_init_gpiomux(void)
 					ARRAY_SIZE(usb_otg_sw_configs));
 
 	msm_gpiomux_sdc3_install();
+
+/*[Arima5908][33614][bozhi_lin] NMI326 dtv function porting 20140207 begin*/
+#if defined(CONFIG_ISDBT_NMI)
+	msm_gpiomux_install(msm_dtv_configs, ARRAY_SIZE(msm_dtv_configs));
+#endif	
+/*[Arima5908][33614][bozhi_lin] 20140207 end  */
 
 	/*
 	 * HSIC STROBE gpio is also used by the ethernet. Install HSIC
